@@ -1,8 +1,10 @@
 package example;
 
 import io.micronaut.context.ApplicationContext;
+import io.micronaut.context.scope.CustomScope;
+import io.micronaut.context.scope.CustomScopeRegistry;
 
-import javax.inject.Inject;
+import java.util.Optional;
 
 public class Application {
 
@@ -14,15 +16,16 @@ public class Application {
         System.out.println("Application.main");
         System.out.println("args = [" + args + "]");
 
+        CurrentRoomScope bean = context.getBean(CurrentRoomScope.class);
         Building building1 = context.getBean(Building.class);
         Building building2 = context.getBean(Building.class);
+//        CustomScopeRegistry customScopeRegistry = context.getBean(CustomScopeRegistry.class);
+//        Optional<CustomScope> scope = customScopeRegistry.findScope(CurrentRoom.class);
 
 
-        building1.printRoom();
-        building1.room.printMajorDomus();
-        building2.printRoom();
-        building2.room.printMajorDomus();
-
+        building1.print();
+        System.out.println();
+        building2.print();
 
     }
 }

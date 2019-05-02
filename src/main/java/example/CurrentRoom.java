@@ -1,4 +1,4 @@
-package example.scope;
+package example;
 
 import io.micronaut.context.annotation.AliasFor;
 import io.micronaut.context.annotation.Bean;
@@ -17,7 +17,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Retention(RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD, ElementType.FIELD, ElementType.PARAMETER})
 @Bean
-public @interface CurrentSession {
+public @interface CurrentRoom {
     @AliasFor(annotation = Named.class, member = "value")
     String value() default "";
 }

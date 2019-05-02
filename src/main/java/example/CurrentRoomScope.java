@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package example.scope;
+package example;
 
+//import example.Building;
 import io.micronaut.aop.InterceptedProxy;
 import io.micronaut.context.BeanContext;
 import io.micronaut.context.BeanResolutionContext;
@@ -27,7 +28,7 @@ import io.micronaut.inject.BeanDefinition;
 import io.micronaut.inject.BeanFactory;
 import io.micronaut.inject.BeanIdentifier;
 import io.micronaut.inject.qualifiers.Qualifiers;
-import org.hibernate.Session;
+//import org.hibernate.Session;
 
 import javax.inject.Provider;
 import javax.inject.Qualifier;
@@ -38,29 +39,29 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 /**
- * Implementation of the {@link CurrentSession} custom scope.
+ * Implementation of the {@link CurrentRoom} custom scope.
  *
  * @author graemerocher
  * @since 1.0
  */
 @Singleton
-public class CurrentSessionScope implements CustomScope<CurrentSession> {
+public class CurrentRoomScope implements CustomScope<CurrentRoom> {
 
     private final BeanContext beanContext;
-    private final Map<BeanIdentifier, Session> proxyBeans = new ConcurrentHashMap<>();
+    private final Map<BeanIdentifier, Room> proxyBeans = new ConcurrentHashMap<>();
 
     /**
      * Default constructor.
      *
      * @param beanContext The bean context
      */
-    protected CurrentSessionScope(BeanContext beanContext) {
+    protected CurrentRoomScope(BeanContext beanContext) {
         this.beanContext = beanContext;
     }
 
     @Override
-    public Class<CurrentSession> annotationType() {
-        return CurrentSession.class;
+    public Class<CurrentRoom> annotationType() {
+        return CurrentRoom.class;
     }
 
     @SuppressWarnings("unchecked")
@@ -68,22 +69,22 @@ public class CurrentSessionScope implements CustomScope<CurrentSession> {
     public <T> T get(BeanResolutionContext resolutionContext, BeanDefinition<T> beanDefinition, BeanIdentifier identifier, Provider<T> provider) {
         return (T) proxyBeans.computeIfAbsent(identifier, beanIdentifier -> {
             BeanResolutionContext.Segment segment = resolutionContext.getPath().currentSegment().orElseThrow(() ->
-                    new IllegalStateException("@CurrentSession used in invalid location")
+                    new IllegalStateException("@CurrentRoom used in invalid location")
             );
             Argument argument = segment.getArgument();
             AnnotationMetadata annotationMetadata = argument.getAnnotationMetadata();
-            io.micronaut.context.Qualifier<Session> qualifier = annotationMetadata.getAnnotationNameByStereotype(Qualifier.class)
-                    .map((Function<String, io.micronaut.context.Qualifier<Session>>) s -> Qualifiers.byAnnotation(annotationMetadata, s)).orElse(null);
+            io.micronaut.context.Qualifier<Room> qualifier = annotationMetadata.getAnnotationNameByStereotype(Qualifier.class)
+                    .map((Function<String, io.micronaut.context.Qualifier<Room>>) s -> Qualifiers.byAnnotation(annotationMetadata, s)).orElse(null);
 
-            Optional<BeanDefinition<Session>> proxyBean = beanContext.getBeanDefinitions(Session.class, qualifier)
+            Optional<BeanDefinition<Room>> proxyBean = beanContext.getBeanDefinitions(Room.class, qualifier)
                     .stream()
                     .filter(BeanDefinition::isProxy)
                     .findFirst();
 
             if (proxyBean.isPresent()) {
-                BeanDefinition<Session> beanDef = proxyBean.get();
-                BeanFactory<Session> beanFactory = (BeanFactory<Session>) beanDef;
-                Session sessionProxy = beanFactory.build(
+                BeanDefinition<Room> beanDef = proxyBean.get();
+                BeanFactory<Room> beanFactory = (BeanFactory<Room>) beanDef;
+                Room sessionProxy = beanFactory.build(
                         resolutionContext,
                         beanContext,
                         beanDef
@@ -97,7 +98,7 @@ public class CurrentSessionScope implements CustomScope<CurrentSession> {
 
                 return sessionProxy;
             }
-            throw new NoSuchBeanException(Session.class, qualifier);
+            throw new NoSuchBeanException(Room.class, qualifier);
         });
 
     }
